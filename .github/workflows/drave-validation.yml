@@ -12,6 +12,9 @@ on:
 jobs:
   validate-detection:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
