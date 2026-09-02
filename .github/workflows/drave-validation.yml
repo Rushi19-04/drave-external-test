@@ -1,0 +1,26 @@
+name: DRAVE Validation
+
+on:
+  push:
+    paths:
+      - 'detections/**'
+      - '.github/workflows/drave-validation.yml'
+  pull_request:
+    paths:
+      - 'detections/**'
+
+jobs:
+  validate-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run DRAVE Detection Validation
+        uses: Rushi19-04/drave-action@v1
+        with:
+          api-base-url: ${{ secrets.DRAVE_API_BASE_URL }}
+          api-key: ${{ secrets.DRAVE_API_KEY }}
+        env:
+          DRAVE_API_BASE_URL: ${{ secrets.DRAVE_API_BASE_URL }}
+          DRAVE_API_KEY: ${{ secrets.DRAVE_API_KEY }}

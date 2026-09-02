@@ -1,0 +1,28 @@
+rule_id: certutil-certificate-dump
+title: Certutil Certificate Extraction
+description: Detects usage of certutil.exe to dump certificate data, a technique commonly used for reconnaissance
+severity: medium
+detection:
+  selection:
+    Image|endswith:
+      - '\certutil.exe'
+    CommandLine|contains|all:
+      - '-dump'
+      - '-asn'
+  condition: selection
+fields:
+  - ComputerName
+  - User
+  - Image
+  - CommandLine
+  - ParentImage
+tags:
+  - attack.defense_evasion
+  - attack.t1140
+  - attack.t1036
+  - detection_type:process_creation
+references:
+  - https://lolbas-project.github.io/lolbas/Binaries/Certutil/
+  - https://www.ired.team/miscellaneous-reversing-notes/windows-overclocking/windows-certificate-store
+falsepositives:
+  - Legitimate system administrators using certutil for certificate management
