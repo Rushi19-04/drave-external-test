@@ -19,8 +19,6 @@ jobs:
       - name: Run DRAVE Detection Validation
         uses: Rushi19-04/drave-action@v1
         with:
-          api-base-url: ${{ secrets.DRAVE_API_BASE_URL }}
+          api-url: https://drave-bfsi.onrender.com
+          rule-paths: detections
           api-key: ${{ secrets.DRAVE_API_KEY }}
-        env:
-          DRAVE_API_BASE_URL: ${{ secrets.DRAVE_API_BASE_URL }}
-          DRAVE_API_KEY: ${{ secrets.DRAVE_API_KEY }}
