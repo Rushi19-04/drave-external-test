@@ -1,3 +1,4 @@
+id: certutil-certificate-dump
 rule_id: certutil-certificate-dump
 title: Certutil Certificate Extraction
 description: Detects usage of certutil.exe to dump certificate data, a technique commonly used for reconnaissance
