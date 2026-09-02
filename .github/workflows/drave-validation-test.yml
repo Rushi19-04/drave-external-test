@@ -1,0 +1,32 @@
+name: DRAVE Composite Test
+
+on:
+  push:
+    branches:
+      - test/composite-action
+
+jobs:
+  validate-detection:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run DRAVE Detection Validation
+        id: drave-action
+        uses: Rushi19-04/drave-action@v1-composite-test
+        with:
+          api-url: https://drave-bfsi.onrender.com
+          rule-paths: detections
+          api-key: ${{ secrets.DRAVE_API_KEY }}
+
+      - name: Verify Outputs
+        if: always()
+        run: |
+          echo "Total: ${{ steps.drave-action.outputs.total }}"
+          echo "Passed: ${{ steps.drave-action.outputs.passed }}"
+          echo "Failed: ${{ steps.drave-action.outputs.failed }}"
+          echo "Synced: ${{ steps.drave-action.outputs.synced }}"
