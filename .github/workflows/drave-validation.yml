@@ -2,12 +2,11 @@ name: DRAVE Validation
 
 on:
   push:
-    paths:
-      - 'detections/**'
-      - '.github/workflows/drave-validation.yml'
+    branches:
+      - main
   pull_request:
-    paths:
-      - 'detections/**'
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       bootstrap:
@@ -25,50 +24,72 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run DRAVE Detection Validation
-        id: drave_validation
-        continue-on-error: true
-        uses: Rushi19-04/DRAVE/action/drave-action-repo@main
-        with:
-          api-url: https://drave-bfsi.onrender.com
-          rule-paths: detections
-          api-key: ${{ secrets.DRAVE_API_KEY }}
-          bootstrap: ${{ github.event.inputs.bootstrap || 'true' }}
-
-      - name: Fetch E2E Results
+      - name: Fetch BEFORE E2E Results
         env:
           API_KEY: ${{ secrets.DRAVE_API_KEY }}
         run: |
           cat << 'EOF' > fetch_e2e.py
           import urllib.request, json, os, time
-          # wait a few seconds for DB to settle
+          url_validations = 'https://drave-bfsi.onrender.com/api/v1/validations'
+          url_rules = 'https://drave-bfsi.onrender.com/api/v1/rules'
+          headers = {'X-API-Key': os.environ['API_KEY']}
+          
+          try:
+              res_v = urllib.request.urlopen(urllib.request.Request(url_validations, headers=headers))
+              validations_before = len(json.loads(res_v.read()))
+              res_r = urllib.request.urlopen(urllib.request.Request(url_rules, headers=headers))
+              rules_before = len(json.loads(res_r.read()))
+              
+              with open('e2e_results.md', 'w') as f:
+                  f.write(f"# Final E2E Results\n\n")
+                  f.write(f"## Before\n")
+                  f.write(f"- ValidationRuns: {validations_before}\n")
+                  f.write(f"- Rules: {rules_before}\n\n")
+          except Exception as e:
+              with open('e2e_results.md', 'w') as f:
+                  f.write(str(e))
+          EOF
+          python fetch_e2e.py
+
+      - name: Run DRAVE Detection Validation
+        id: drave_validation
+        uses: Rushi19-04/DRAVE/action/drave-action-repo@v1
+        with:
+          api-url: https://drave-bfsi.onrender.com
+          rule-paths: detections
+          api-key: ${{ secrets.DRAVE_API_KEY }}
+          bootstrap: ${{ github.event.inputs.bootstrap || 'false' }}
+
+      - name: Fetch AFTER E2E Results
+        if: always()
+        env:
+          API_KEY: ${{ secrets.DRAVE_API_KEY }}
+        run: |
+          cat << 'EOF' > fetch_e2e_after.py
+          import urllib.request, json, os, time
           time.sleep(5)
           url_validations = 'https://drave-bfsi.onrender.com/api/v1/validations'
           url_rules = 'https://drave-bfsi.onrender.com/api/v1/rules'
           headers = {'X-API-Key': os.environ['API_KEY']}
           
           try:
-              req_v = urllib.request.Request(url_validations, headers=headers)
-              res_v = urllib.request.urlopen(req_v)
-              validations = json.loads(res_v.read())
+              res_v = urllib.request.urlopen(urllib.request.Request(url_validations, headers=headers))
+              validations_after = len(json.loads(res_v.read()))
+              res_r = urllib.request.urlopen(urllib.request.Request(url_rules, headers=headers))
+              rules_after = len(json.loads(res_r.read()))
               
-              req_r = urllib.request.Request(url_rules, headers=headers)
-              res_r = urllib.request.urlopen(req_r)
-              rules = json.loads(res_r.read())
-              
-              with open('e2e_results.md', 'w') as f:
-                  f.write(f"# E2E Results\n\n")
-                  f.write(f"- ValidationRuns created: {len(validations)}\n")
-                  f.write(f"- Rules visible on dashboard: {len(rules)}\n")
-                  f.write(f"\nRaw Rules: {len(rules)}")
+              with open('e2e_results.md', 'a') as f:
+                  f.write(f"## After\n")
+                  f.write(f"- ValidationRuns: {validations_after}\n")
+                  f.write(f"- Rules: {rules_after}\n")
           except Exception as e:
-              with open('e2e_results.md', 'w') as f:
+              with open('e2e_results.md', 'a') as f:
                   f.write(str(e))
           EOF
-          python fetch_e2e.py
+          python fetch_e2e_after.py
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add e2e_results.md
-          git commit -m "Capture E2E results final" || echo "No changes to commit"
+          git commit -m "Capture Final E2E results" || echo "No changes to commit"
           git push || echo "Push failed"
 
