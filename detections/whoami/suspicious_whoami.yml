@@ -1,1 +1,19 @@
-﻿摩›㔵攰㐸〰攭㤲ⵢㄴ㑤愭ㄷⴶ㐴㘶㔵㐴〰㈰਍慮敭›畓灳捩潩獵圠潨浡⁩硅捥瑵潩⁮ല搊獥牣灩楴湯›敄整瑣⁳硥捥瑵潩⁮景眠潨浡⹩硥⁥楷桴⼠污⁬汦条਍敳敶楲祴›楨桧਍畡桴牯›剄噁൅搊瑡㩥∠〲㘲〭ⴹ㌰ഢ猊慴畴㩳攠灸牥浩湥慴൬氊杯潳牵散ഺ 挠瑡来牯㩹瀠潲散獳损敲瑡潩൮ 瀠潲畤瑣›楷摮睯൳搊瑥捥楴湯ഺ 挠湯楤楴湯›敳敬瑣潩൮氊湡畧条㩥猠杩慭਍汰瑡潦浲›楷摮睯൳焊敵祲›瀢潲散獳渮浡㩥眠潨浡⹩硥⁥乁⁄牰捯獥⹳潣浭湡彤楬敮›愯汬ഢ挊敲瑡摥慟㩴∠〲㘲〭ⴹ㌰ご㨰〰〺娰ഢ甊摰瑡摥慟㩴∠〲㘲〭ⴹ㌰ご㨰〰〺娰ഢ瘊牥楳湯›റ琊条㩳嬠൝ਊ⌀ 䴀甀氀琀椀挀漀洀洀椀琀 ㈀ഀ਀
+id: 550e8400-e29b-41d4-a716-446655440002
+name: Suspicious Whoami Execution 2
+description: Detects execution of whoami.exe with /all flag
+severity: high
+author: DRAVE
+date: "2026-09-03"
+status: experimental
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  condition: selection
+language: sigma
+platform: windows
+query: "process.name: whoami.exe AND process.command_line: /all"
+created_at: "2026-09-03T00:00:00Z"
+updated_at: "2026-09-03T00:00:00Z"
+version: 1
+tags: []

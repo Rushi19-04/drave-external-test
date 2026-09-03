@@ -1,2 +1,32 @@
-﻿摩›散瑲瑵汩挭牥楴楦慣整搭浵൰爊汵彥摩›散瑲瑵汩挭牥楴楦慣整搭浵൰琊瑩敬›敃瑲瑵汩䌠牥楴楦慣整䔠瑸慲瑣潩൮搊獥牣灩楴湯›敔瑳搠獡扨慯摲瘠污摩瑡潩⁮㍶਍敳敶楲祴›敭楤浵਍敤整瑣潩㩮਍潬獧畯捲㩥਍†慣整潧祲›牰捯獥彳牣慥楴湯਍†牰摯捵㩴眠湩潤獷਍†敳敬瑣潩㩮਍††浉条籥湥獤楷桴ഺ ††ⴠ✠捜牥畴楴⹬硥❥਍††潃浭湡䱤湩籥潣瑮楡獮慼汬ഺ ††ⴠ✠搭浵❰਍†††‭ⴧ獡❮਍†潣摮瑩潩㩮猠汥捥楴湯਍楦汥獤ഺ ⴠ䌠浯異整乲浡൥ ⴠ唠敳൲ ⴠ䤠慭敧਍†‭潃浭湡䱤湩൥ ⴠ倠牡湥䥴慭敧਍慴獧ഺ ⴠ愠瑴捡⹫敤敦獮彥癥獡潩൮ ⴠ愠瑴捡⹫ㅴ㐱ര ⴠ愠瑴捡⹫ㅴ㌰ശ ⴠ搠瑥捥楴湯瑟灹㩥牰捯獥彳牣慥楴湯਍敲敦敲据獥ഺ ⴠ栠瑴獰⼺氯汯慢⵳牰橯捥⹴楧桴扵椮⽯潬扬獡䈯湩牡敩⽳敃瑲瑵汩യ ⴠ栠瑴獰⼺眯睷椮敲⹤整浡洯獩散汬湡潥獵爭癥牥楳杮渭瑯獥眯湩潤獷漭敶捲潬正湩⽧楷摮睯⵳散瑲晩捩瑡ⵥ瑳牯൥昊污敳潰楳楴敶㩳਍†‭敌楧楴慭整猠獹整⁭摡業楮瑳慲潴獲甠楳杮挠牥畴楴⁬潦⁲散瑲晩捩瑡⁥慭慮敧敭瑮਍
-# Multicommit 1
+id: certutil-certificate-dump
+rule_id: certutil-certificate-dump
+title: Certutil Certificate Extraction
+description: Test dashboard validation v3
+severity: medium
+detection:
+logsource:
+  category: process_creation
+  product: windows
+  selection:
+    Image|endswith:
+      - '\certutil.exe'
+    CommandLine|contains|all:
+      - '-dump'
+      - '-asn'
+  condition: selection
+fields:
+  - ComputerName
+  - User
+  - Image
+  - CommandLine
+  - ParentImage
+tags:
+  - attack.defense_evasion
+  - attack.t1140
+  - attack.t1036
+  - detection_type:process_creation
+references:
+  - https://lolbas-project.github.io/lolbas/Binaries/Certutil/
+  - https://www.ired.team/miscellaneous-reversing-notes/windows-overclocking/windows-certificate-store
+falsepositives:
+  - Legitimate system administrators using certutil for certificate management
