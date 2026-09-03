@@ -55,7 +55,7 @@ jobs:
 
       - name: Run DRAVE Detection Validation
         id: drave_validation
-        uses: Rushi19-04/DRAVE/action/drave-action-repo@v1
+        uses: Rushi19-04/drave-action@v1
         with:
           api-url: https://drave-bfsi.onrender.com
           rule-paths: detections
