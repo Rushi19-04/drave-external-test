@@ -1,5 +1,5 @@
-id: certutil-certificate-dump
-rule_id: certutil-certificate-dump
+id: certutil-certificate-dump-3
+rule_id: certutil-certificate-dump-3
 title: Certutil Certificate Extraction
 description: Test dashboard validation v3
 severity: medium
