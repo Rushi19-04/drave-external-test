@@ -8,6 +8,12 @@ on:
   pull_request:
     paths:
       - 'detections/**'
+  workflow_dispatch:
+    inputs:
+      bootstrap:
+        description: 'Run in bootstrap mode'
+        required: false
+        default: 'false'
 
 jobs:
   validate-detection:
@@ -25,4 +31,4 @@ jobs:
           api-url: https://drave-bfsi.onrender.com
           rule-paths: detections
           api-key: ${{ secrets.DRAVE_API_KEY }}
-          bootstrap: 'true'
+          bootstrap: ${{ github.event.inputs.bootstrap || 'false' }}
