@@ -1,0 +1,29 @@
+id: suspicious-whoami-execution
+rule_id: suspicious-whoami-execution
+title: Suspicious Whoami Execution
+description: Detects execution of whoami.exe with /all flag, often used in post-compromise discovery by threat actors for user and privilege enumeration.
+author: DRAVE Security Team
+date: 2026-09-03
+status: test
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\whoami.exe'
+    CommandLine|contains: '/all'
+  condition: selection
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+tags:
+  - attack.discovery
+  - attack.t1033
+references:
+  - https://lolbas-project.github.io/lolbas/Binaries/Whoami/
+  - https://attack.mitre.org/techniques/T1033/
+falsepositives:
+  - System administrators running whoami for diagnostics
+level: medium

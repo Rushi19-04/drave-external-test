@@ -1,0 +1,11 @@
+test_id: test-suspicious-whoami-positive-01
+detection_id: suspicious-whoami-execution
+type: positive
+input_telemetry:
+  - EventID: 1
+    Image: "C:\\Windows\\System32\\whoami.exe"
+    CommandLine: "whoami /all"
+    ParentImage: "C:\\Windows\\System32\\cmd.exe"
+    User: "CORP\\jdoe"
+expected:
+  alert: true
