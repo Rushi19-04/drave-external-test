@@ -25,50 +25,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Hit API directly
-        env:
-          API_KEY: ${{ secrets.DRAVE_API_KEY }}
-        run: |
-          cat << 'EOF' > test_api.py
-          import urllib.request, json, os, uuid
-          payload = {
-              "rule": {
-                  "id": str(uuid.uuid4()),
-                  "name": "Test",
-                  "description": "Test",
-                  "severity": "high",
-                  "author": "Test",
-                  "date": "2023-01-01",
-                  "status": "experimental",
-                  "logsource": {"category": "test", "product": "test"},
-                  "detection": {"condition": "test"},
-                  "language": "sigma",
-                  "platform": "windows",
-                  "query": "test query",
-                  "created_at": "2023-01-01T00:00:00Z",
-                  "updated_at": "2023-01-01T00:00:00Z",
-                  "version": 1,
-                  "tags": []
-              },
-              "score": 100.0,
-              "evidence": {}
-          }
-          url = 'https://drave-bfsi.onrender.com/api/v1/rules'
-          headers = {'X-API-Key': os.environ['API_KEY'], 'Content-Type': 'application/json'}
-          req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers=headers, method='POST')
-          try:
-              urllib.request.urlopen(req)
-          except Exception as e:
-              with open('api_error.log', 'w') as f:
-                  if hasattr(e, 'read'):
-                      f.write(e.read().decode())
-                  else:
-                      f.write(str(e))
-          EOF
-          python test_api.py
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add api_error.log
-          git commit -m "Capture raw API error"
-          git push
+      - name: Run DRAVE Detection Validation
+        id: drave_validation
+        continue-on-error: true
+        uses: Rushi19-04/DRAVE/action/drave-action-repo@main
+        with:
+          api-url: https://drave-bfsi.onrender.com
+          rule-paths: detections
+          api-key: ${{ secrets.DRAVE_API_KEY }}
+          bootstrap: ${{ github.event.inputs.bootstrap || 'true' }}
 
