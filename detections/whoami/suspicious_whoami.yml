@@ -1,7 +1,7 @@
 id: 550e8400-e29b-41d4-a716-446655440002
 name: Suspicious Whoami Execution 2
 description: Detects execution of whoami.exe with /all flag
-severity: low
+severity: medium
 author: DRAVE
 date: "2026-09-03"
 status: experimental
