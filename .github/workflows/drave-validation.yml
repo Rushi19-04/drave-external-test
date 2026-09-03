@@ -25,21 +25,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run DRAVE Detection Validation
-        id: drave_validation
-        continue-on-error: true
-        uses: Rushi19-04/DRAVE/action/drave-action-repo@main
-        with:
-          api-url: https://drave-bfsi.onrender.com
-          rule-paths: detections
-          api-key: ${{ secrets.DRAVE_API_KEY }}
-          bootstrap: ${{ github.event.inputs.bootstrap || 'true' }}
-
-      - name: Save logs to file
-        if: always()
+      - name: Hit API directly
+        env:
+          API_KEY: ${{ secrets.DRAVE_API_KEY }}
         run: |
+          python -c "
+          import urllib.request, json, os, uuid
+          url = 'https://drave-bfsi.onrender.com/api/v1/rules'
+          headers = {'X-API-Key': os.environ['API_KEY'], 'Content-Type': 'application/json'}
+          
+          # Create dummy payload that matches schema
+          payload = {
+              'rule': {
+                  'id': str(uuid.uuid4()),
+                  'name': 'Dummy Rule',
+                  'description': 'Dummy description',
+                  'severity': 'high',
+                  'author': 'Tester',
+                  'date': '2023-01-01',
+                  'status': 'experimental',
+                  'logsource': {'category': 'process_creation', 'product': 'windows'},
+                  'detection': {'condition': 'all of them'}
+              },
+              'score': 100.0
+          }
+          
+          req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers=headers, method='POST')
+          try:
+              urllib.request.urlopen(req)
+          except Exception as e:
+              if hasattr(e, 'read'):
+                  print(e.read().decode())
+              else:
+                  print(str(e))
+          " > api_error.log
+          
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add api_sync_*.log
-          git commit -m "Add API sync logs"
+          git add api_error.log
+          git commit -m "Capture raw API error"
           git push
+
